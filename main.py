@@ -65,7 +65,7 @@ def insert():
         img_array = img_to_array(img)
         img_array = np.expand_dims(img_array, axis=0)  # Add a batch dimension
         # To load the model
-        loaded_model = load_model("/main_emphysema_model.keras")
+        loaded_model = load_model("main_emphysema_model.keras")
         # Make the prediction
         st.subheader("Uploaded Image")
         st.image(img, width=400)
