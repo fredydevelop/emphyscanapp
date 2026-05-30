@@ -16,6 +16,7 @@ from PIL import Image
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.image import resize
 from tensorflow.keras.models import load_model, save_model
+import traceback
 
 
 st.image("emphylogo.png", width=120)
@@ -60,7 +61,13 @@ def insert():
         img_array = np.expand_dims(img_array, axis=0)  # Add a batch dimension
 
         # To load the model
-        loaded_model = load_model("main_emphysema_model.keras")
+        try:
+            loaded_model = load_model(
+                "main_emphysema_model.keras",
+                compile=False
+            )
+        except Exception:
+            st.code(traceback.format_exc())
         # Make the prediction
         
         if st.button("Predict"):
