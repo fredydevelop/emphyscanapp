@@ -19,7 +19,7 @@ from tensorflow.keras.models import load_model, save_model
 import traceback
 
 
-st.image("emphylogo.png", width=120)
+st.image("emphylogo.png", width=200)
 st.header("Emphysema Chest Xray Detector")
 
 
@@ -69,7 +69,8 @@ def insert():
         except Exception:
             st.code(traceback.format_exc())
         # Make the prediction
-        
+        st.image(img, width=300)
+
         if st.button("Predict"):
             prediction = loaded_model.predict(img_array)
             predicted_class = int(np.argmax(prediction, axis=1)[0])
