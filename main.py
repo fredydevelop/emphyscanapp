@@ -18,14 +18,8 @@ from tensorflow.image import resize
 from tensorflow.keras.models import load_model, save_model
 
 
-col1, col2 = st.columns(2)
-
-with col1:
-    st.image("emphylogo.png", width=120)
-    st.header("Emphysema Chest Xray Detector")
-    #st.image("MMJXray.jpg",width=80)
-
-
+st.image("emphylogo.png", width=120)
+st.header("Emphysema Chest Xray Detector")
 
 
 class_labels = {
@@ -62,15 +56,11 @@ def insert():
     if uploaded_file is not None:
         # Convert the uploaded image to RGB
         img = Image.open(uploaded_file).convert("RGB")
-        # Resize the image using TensorFlow
-        #resize_img = resize(img, (1822,1275))
-        # resize_img = resize(img, (150,150))
-        # Convert the resized image to an array
         img_array = img_to_array(img)
         img_array = np.expand_dims(img_array, axis=0)  # Add a batch dimension
 
         # To load the model
-        loaded_model = load_model("n.h5")
+        loaded_model = load_model("main_emphysema_model.keras")
         # Make the prediction
         
         if st.button("Predict"):
