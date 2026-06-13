@@ -63,7 +63,7 @@ def insert():
         # To load the model
         try:
             loaded_model = load_model(
-                "try_emphysema_model.keras",
+                "new_emphysema_model.keras",
                 compile=False
             )
         except Exception:
