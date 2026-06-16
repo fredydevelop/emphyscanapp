@@ -69,7 +69,10 @@ def insert():
 
         predict_btn = False
 
-        if uploaded_file is not None:
+        if uploaded_file is None:
+            st.info("Upload a chest X-ray image to begin analysis.")
+
+        else:
             img = Image.open(uploaded_file).convert("RGB")
 
             st.image(
@@ -85,19 +88,13 @@ def insert():
 
     # RIGHT COLUMN
     with col2:
-        st.subheader("Prediction Results")
 
-        if uploaded_file is None:
-            st.info("Upload a chest X-ray image to begin analysis.")
-
-        elif predict_btn:
+        if predict_btn:
 
             try:
-                loaded_model = load_emphysema_model()
+                st.subheader("Prediction Results")
 
-                # OPTIONAL:
-                # Resize image if your model expects a specific size
-                # img = img.resize((224, 224))
+                loaded_model = load_emphysema_model()
 
                 img_array = img_to_array(img)
                 img_array = np.expand_dims(img_array, axis=0)
