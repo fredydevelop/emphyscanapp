@@ -1,33 +1,29 @@
 import numpy as np
-import pandas as pd
 import tensorflow as tf
-from keras.utils import to_categorical
-import random
-import os
-import imghdr
-import streamlit as st
-import pickle as pk
-import cv2
-import requests
-from PIL import Image
-from io import BytesIO
 import streamlit as st
 from PIL import Image
 from tensorflow.keras.preprocessing.image import img_to_array
-from tensorflow.image import resize
-from tensorflow.keras.models import load_model, save_model
+from tensorflow.keras.models import load_model
 import traceback
 
-
+# =========================
+# PAGE HEADER
+# =========================
 st.image("emphylogo.png", width=200)
-st.header("Emphysema Chest Xray Detector")
+st.header("Emphysema Chest X-ray Detector")
 
-
+# =========================
+# CLASS LABELS
+# =========================
 class_labels = {
     0: "Emphysema",
     1: "Normal",
 }
 
+
+# =========================
+# RECOMMENDATIONS
+# =========================
 def get_recommendation(predicted_category):
     if predicted_category == "Emphysema":
         return (
@@ -43,54 +39,113 @@ def get_recommendation(predicted_category):
             "seek medical advice for a comprehensive assessment."
         )
 
-    else:
-        return "No recommendation available."
-    
+    return "No recommendation available."
 
 
+# =========================
+# MAIN APP
+# =========================
 def insert():
-    #st.markdown("Pneumonia Xray clasification system")
-    
-    # File uploader widget
-    uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png","bmp"], key="upl")
 
-    if uploaded_file is not None:
-        # Convert the uploaded image to RGB
-        img = Image.open(uploaded_file).convert("RGB")
-        img_array = img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0)  # Add a batch dimension
+    # Create two columns
+    col1, col2 = st.columns([1, 1])
 
-        # To load the model
-        try:
-            loaded_model = load_model(
-                "new_emphysema_model.keras",
-                compile=False
+    # LEFT COLUMN
+    with col1:
+        st.subheader("Upload Chest X-ray")
+
+        uploaded_file = st.file_uploader(
+            "Select an image",
+            type=["jpg", "jpeg", "png", "bmp"],
+            key="upl"
+        )
+
+        if uploaded_file is not None:
+            img = Image.open(uploaded_file).convert("RGB")
+
+            st.image(
+                img,
+                caption="Selected X-ray Image",
+                use_container_width=True
             )
-        except Exception:
-            st.code(traceback.format_exc())
-        # Make the prediction
-        st.image(img, width=300)
 
-        if st.button("Predict"):
-            prediction = loaded_model.predict(img_array)
-            predicted_class = int(np.argmax(prediction, axis=1)[0])
-            confidence = float(np.max(prediction) * 100)
-            predicted_category = class_labels[predicted_class]
-            recommendation = get_recommendation(predicted_category)
+            predict_btn = st.button(
+                "Predict",
+                use_container_width=True
+            )
 
-            st.subheader("Prediction Result")
-            if predicted_category == "Normal":
-                st.success(f"Predicted Class: {predicted_category}")
-            else:
-                st.warning(f"Predicted Class: {predicted_category}")
+        else:
+            predict_btn = False
 
-            st.info(f"Confidence Score: {confidence:.2f}%")
+    # RIGHT COLUMN
+    with col2:
+        st.subheader("Prediction Results")
 
-            st.subheader("Recommendation")
-            st.write(recommendation)
+        if uploaded_file is None:
+            st.info("Upload a chest X-ray image to begin analysis.")
+
+        elif predict_btn:
+
+            try:
+                # Load model
+                loaded_model = load_model(
+                    "new_emphysema_model.keras",
+                    compile=False
+                )
+
+                # Preprocess image
+                img_array = img_to_array(img)
+                img_array = np.expand_dims(img_array, axis=0)
+
+                # Make prediction
+                prediction = loaded_model.predict(img_array)
+
+                predicted_class = int(
+                    np.argmax(prediction, axis=1)[0]
+                )
+
+                confidence = float(
+                    np.max(prediction) * 100
+                )
+
+                predicted_category = class_labels[predicted_class]
+
+                recommendation = get_recommendation(
+                    predicted_category
+                )
+
+                # Display prediction
+                st.subheader("Diagnosis")
+
+                if predicted_category == "Normal":
+                    st.success(
+                        f"Predicted Class: {predicted_category}"
+                    )
+                else:
+                    st.warning(
+                        f"Predicted Class: {predicted_category}"
+                    )
+
+                st.metric(
+                    label="Confidence Score",
+                    value=f"{confidence:.2f}%"
+                )
+
+                st.subheader("Recommendation")
+                st.write(recommendation)
+
+            except Exception:
+                st.error("An error occurred during prediction.")
+                st.code(traceback.format_exc())
+
+        elif uploaded_file is not None:
+            st.info(
+                "Click the Predict button to analyze the uploaded image."
+            )
 
 
-
-
+# =========================
+# RUN APP
+# =========================
 if __name__ == "__main__":
     insert()
