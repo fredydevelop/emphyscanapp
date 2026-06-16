@@ -9,7 +9,7 @@ import traceback
 # =========================
 # PAGE HEADER
 # =========================
-st.image("emphylogo.png", width=100)
+st.image("emphyscan.png.png", width=200)
 st.header("Emphysema Chest X-ray Detector")
 
 # =========================
