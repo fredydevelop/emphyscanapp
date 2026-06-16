@@ -59,7 +59,7 @@ def insert():
 
     # LEFT COLUMN
     with col1:
-        st.subheader("Upload Chest X-ray")
+        st.info("Upload a chest X-ray image to begin analysis.")
 
         uploaded_file = st.file_uploader(
             "",
@@ -70,7 +70,7 @@ def insert():
         predict_btn = False
 
         if uploaded_file is None:
-            st.info("Upload a chest X-ray image to begin analysis.")
+            st.warning("No image uploaded")
 
         else:
             img = Image.open(uploaded_file).convert("RGB")
