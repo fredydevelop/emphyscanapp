@@ -136,10 +136,7 @@ def insert():
                 st.error("An error occurred during prediction.")
                 st.code(traceback.format_exc())
 
-        elif uploaded_file is not None:
-            st.info(
-                "Click the Predict button to analyze the uploaded image."
-            )
+        
 
 
 # =========================
