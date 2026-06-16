@@ -59,8 +59,6 @@ def insert():
 
     # LEFT COLUMN
     with col1:
-        st.info("Upload a chest X-ray image to begin analysis.")
-
         uploaded_file = st.file_uploader(
             "",
             type=["jpg", "jpeg", "png", "bmp"],
@@ -92,7 +90,7 @@ def insert():
         if predict_btn:
 
             try:
-                st.subheader("Prediction Results")
+                #st.subheader("Prediction Results")
 
                 loaded_model = load_emphysema_model()
 
@@ -115,7 +113,7 @@ def insert():
                     predicted_category
                 )
 
-                st.subheader("Diagnosis")
+                #st.subheader("Diagnosis")
 
                 if predicted_category == "Normal":
                     st.success(
