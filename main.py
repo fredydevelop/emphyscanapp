@@ -83,7 +83,7 @@ def insert():
     # RIGHT COLUMN
     with col2:
 
-        elif predict_btn:
+        if predict_btn:
 
             try:
                 # Load model
