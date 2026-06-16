@@ -62,6 +62,7 @@ def insert():
         st.subheader("Upload Chest X-ray")
 
         uploaded_file = st.file_uploader(
+            "",
             type=["jpg", "jpeg", "png", "bmp"],
             key="upl"
         )
