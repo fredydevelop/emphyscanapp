@@ -1,5 +1,4 @@
 import numpy as np
-import tensorflow as tf
 import streamlit as st
 from PIL import Image
 from tensorflow.keras.preprocessing.image import img_to_array
@@ -20,6 +19,15 @@ class_labels = {
     1: "Normal",
 }
 
+# =========================
+# LOAD MODEL
+# =========================
+@st.cache_resource
+def load_emphysema_model():
+    return load_model(
+        "new_emphysema_model.keras",
+        compile=False
+    )
 
 # =========================
 # RECOMMENDATIONS
@@ -47,21 +55,19 @@ def get_recommendation(predicted_category):
 # =========================
 def insert():
 
-    # Create two columns
     col1, col2 = st.columns([1, 1])
 
     # LEFT COLUMN
     with col1:
         st.subheader("Upload Chest X-ray")
-        st.subheader("Prediction Results")
-        if uploaded_file is None:
-            st.info("Upload a chest X-ray image to begin analysis.")
-            
+
         uploaded_file = st.file_uploader(
             "Select an image",
             type=["jpg", "jpeg", "png", "bmp"],
             key="upl"
         )
+
+        predict_btn = False
 
         if uploaded_file is not None:
             img = Image.open(uploaded_file).convert("RGB")
@@ -77,26 +83,25 @@ def insert():
                 use_container_width=True
             )
 
-        else:
-            predict_btn = False
-
     # RIGHT COLUMN
     with col2:
+        st.subheader("Prediction Results")
 
-        if predict_btn:
+        if uploaded_file is None:
+            st.info("Upload a chest X-ray image to begin analysis.")
+
+        elif predict_btn:
 
             try:
-                # Load model
-                loaded_model = load_model(
-                    "new_emphysema_model.keras",
-                    compile=False
-                )
+                loaded_model = load_emphysema_model()
 
-                # Preprocess image
+                # OPTIONAL:
+                # Resize image if your model expects a specific size
+                # img = img.resize((224, 224))
+
                 img_array = img_to_array(img)
                 img_array = np.expand_dims(img_array, axis=0)
 
-                # Make prediction
                 prediction = loaded_model.predict(img_array)
 
                 predicted_class = int(
@@ -113,7 +118,6 @@ def insert():
                     predicted_category
                 )
 
-                # Display prediction
                 st.subheader("Diagnosis")
 
                 if predicted_category == "Normal":
@@ -126,8 +130,8 @@ def insert():
                     )
 
                 st.metric(
-                    label="Confidence Score",
-                    value=f"{confidence:.2f}%"
+                    "Confidence Score",
+                    f"{confidence:.2f}%"
                 )
 
                 st.subheader("Recommendation")
